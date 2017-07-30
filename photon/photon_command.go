@@ -55,11 +55,21 @@ type ReliableMessage struct {
 	Data           []byte
 }
 
+type ReliableFragment struct {
+	SequenceNumber int32
+	FragmentCount int32
+	FragmentNumber int32
+	TotalLength int32
+	FragmentOffset int32
+
+	Data []byte
+}
+
 func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	if c.Type != SendReliableType {
 		return msg, fmt.Errorf("Command can't be converted")
 	}
-
+	
 	buf := bytes.NewBuffer(c.Data)
 
 	binary.Read(buf, binary.BigEndian, &msg.Signature)
@@ -81,6 +91,24 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	}
 
 	binary.Read(buf, binary.BigEndian, &msg.ParamaterCount)
+	msg.Data = buf.Bytes()
+
+	return
+}
+
+func (c PhotonCommand) ReliableFragment() (msg ReliableFragment, err error) {
+	if c.Type != SendReliableFragmentType {
+		return msg, fmt.Errorf("Command can't be converted")
+	}
+
+	buf := bytes.NewBuffer(c.Data)
+
+	binary.Read(buf, binary.BigEndian, &msg.SequenceNumber)
+	binary.Read(buf, binary.BigEndian, &msg.FragmentCount)
+	binary.Read(buf, binary.BigEndian, &msg.FragmentNumber)
+	binary.Read(buf, binary.BigEndian, &msg.TotalLength)
+	binary.Read(buf, binary.BigEndian, &msg.FragmentOffset)
+
 	msg.Data = buf.Bytes()
 
 	return
