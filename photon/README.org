@@ -1,0 +1,3 @@
+** Photon
+
+Based off of [[https://github.com/AltspaceVR/wireshark-photon-dissector][the wireshark dissector]], provides a layer to gopacket to convert photon packets structs.
