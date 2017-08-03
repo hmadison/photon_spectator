@@ -74,7 +74,7 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 
 	binary.Read(buf, binary.BigEndian, &msg.Signature)
 	binary.Read(buf, binary.BigEndian, &msg.Type)
-
+	
 	if msg.Type == otherOperationResponse {
 		msg.Type = OperationResponse
 	}
@@ -84,7 +84,7 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 		binary.Read(buf, binary.BigEndian, &msg.OperationCode)
 	case EventDataType:
 		binary.Read(buf, binary.BigEndian, &msg.EventCode)
-	case OperationResponse:
+	case OperationResponse, otherOperationResponse:
 		binary.Read(buf, binary.BigEndian, &msg.OperationCode)
 		binary.Read(buf, binary.BigEndian, &msg.OperationResponseCode)
 		binary.Read(buf, binary.BigEndian, &msg.OperationDebugByte)
