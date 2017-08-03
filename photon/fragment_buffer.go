@@ -17,7 +17,7 @@ func (buf *FragmentBuffer) Offer(msg ReliableFragment) *PhotonCommand {
 
 	if entry.Finished() {
 		command := entry.Make()
-		delete(buf.entries, int(msg.SequenceNumber))	
+		delete(buf.entries, int(msg.SequenceNumber))
 		return &command
 	} else {
 		buf.entries[int(msg.SequenceNumber)] = entry
@@ -26,8 +26,8 @@ func (buf *FragmentBuffer) Offer(msg ReliableFragment) *PhotonCommand {
 }
 
 type fragmentBufferEntry struct {
-	FragmentsNeeded     int
-	Fragments           map[int][]byte
+	FragmentsNeeded int
+	Fragments       map[int][]byte
 }
 
 func (buf fragmentBufferEntry) Finished() bool {
@@ -40,12 +40,11 @@ func (buf fragmentBufferEntry) Make() PhotonCommand {
 	for i := 0; i < buf.FragmentsNeeded; i++ {
 		data = append(data, buf.Fragments[i]...)
 	}
-	
+
 	return PhotonCommand{Type: SendReliableType, Data: data}
 }
 
-
-func NewFragmentBuffer() (*FragmentBuffer) {
+func NewFragmentBuffer() *FragmentBuffer {
 	var f FragmentBuffer
 	f.entries = make(map[int]fragmentBufferEntry)
 	return &f

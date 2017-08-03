@@ -57,9 +57,9 @@ type ReliableMessage struct {
 
 type ReliableFragment struct {
 	SequenceNumber int32
-	FragmentCount int32
+	FragmentCount  int32
 	FragmentNumber int32
-	TotalLength int32
+	TotalLength    int32
 	FragmentOffset int32
 
 	Data []byte
@@ -69,12 +69,12 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	if c.Type != SendReliableType {
 		return msg, fmt.Errorf("Command can't be converted")
 	}
-	
+
 	buf := bytes.NewBuffer(c.Data)
 
 	binary.Read(buf, binary.BigEndian, &msg.Signature)
 	binary.Read(buf, binary.BigEndian, &msg.Type)
-	
+
 	if msg.Type == otherOperationResponse {
 		msg.Type = OperationResponse
 	}
