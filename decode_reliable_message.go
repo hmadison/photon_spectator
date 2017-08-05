@@ -37,70 +37,27 @@ func DecodeReliableMessage(msg ReliableMessage) (map[string]interface{}, error) 
 		case NilType, 0:
 			// Do nothing
 		case Int8Type:
-			var temp int8
-
-			binary.Read(buf, binary.BigEndian, &temp)
-
-			params[paramsKey] = temp
+			params[paramsKey] = decodeInt8Type(buf)
 		case Float32Type:
-			var temp float32
-
-			binary.Read(buf, binary.BigEndian, &temp)
-
-			params[paramsKey] = temp
+			params[paramsKey] = decodeFloat32Type(buf)
 		case Int32Type:
-			var temp int32
-
-			binary.Read(buf, binary.BigEndian, &temp)
-
-			params[paramsKey] = temp
+			params[paramsKey] = decodeInt32Type(buf)
 		case Int16Type, 7:
-			var temp int16
-
-			binary.Read(buf, binary.BigEndian, &temp)
-
-			params[paramsKey] = temp
+			params[paramsKey] = decodeInt16Type(buf)
 		case Int64Type:
-			var temp int64
-
-			binary.Read(buf, binary.BigEndian, &temp)
-
-			params[paramsKey] = temp
+			params[paramsKey] = decodeInt64Type(buf)
 		case StringType:
-			var length uint16
-
-			binary.Read(buf, binary.BigEndian, &length)
-
-			strBytes := make([]byte, length)
-			buf.Read(strBytes)
-
-			params[paramsKey] = string(strBytes[:])
+			params[paramsKey] = decodeStringType(buf)
 		case BooleanType:
-			var value uint8
+			result, err := decodeBooleanType(buf)
 
-			binary.Read(buf, binary.BigEndian, &value)
-
-			if value == 0 {
-				params[paramsKey] = false
-			} else if value == 1 {
-				params[paramsKey] = true
-			} else {
-				return nil, fmt.Errorf("Invalid value for boolean of %d", value)
+			if err != nil {
+				return nil, err
 			}
+
+			params[paramsKey] = result
 		case SliceInt8Type:
-			var length uint32
-
-			binary.Read(buf, binary.BigEndian, &length)
-
-			array := make([]int8, length)
-
-			for j := 0; j < int(length); j++ {
-				var temp int8
-				binary.Read(buf, binary.BigEndian, &temp)
-				array[j] = temp
-			}
-
-			params[paramsKey] = array
+			params[paramsKey] = decodeSliceInt8Type(buf)
 		case SliceType:
 			array, error := decodeSlice(buf)
 			if error != nil {
@@ -127,9 +84,7 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([]float32, length)
 
 		for j := 0; j < int(length); j++ {
-			var temp float32
-			binary.Read(buf, binary.BigEndian, &temp)
-			array[j] = temp
+			array[j] = decodeFloat32Type(buf)
 		}
 
 		return array, nil
@@ -137,9 +92,7 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([]int32, length)
 
 		for j := 0; j < int(length); j++ {
-			var temp int32
-			binary.Read(buf, binary.BigEndian, &temp)
-			array[j] = temp
+			array[j] = decodeInt32Type(buf)
 		}
 
 		return array, nil
@@ -157,9 +110,7 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([]int64, length)
 
 		for j := 0; j < int(length); j++ {
-			var temp int64
-			binary.Read(buf, binary.BigEndian, &temp)
-			array[j] = temp
+			array[j] = decodeInt64Type(buf)
 		}
 
 		return array, nil
@@ -167,14 +118,7 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([]string, length)
 
 		for j := 0; j < int(length); j++ {
-			var strLen uint16
-
-			binary.Read(buf, binary.BigEndian, &strLen)
-
-			strBytes := make([]byte, strLen)
-			buf.Read(strBytes)
-
-			array[j] = string(strBytes[:])
+			array[j] = decodeStringType(buf)
 		}
 
 		return array, nil
@@ -182,17 +126,13 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([]bool, length)
 
 		for j := 0; j < int(length); j++ {
-			var value uint8
+			result, err := decodeBooleanType(buf)
 
-			binary.Read(buf, binary.BigEndian, &value)
-
-			if value == 0 {
-				array[j] = false
-			} else if value == 1 {
-				array[j] = true
-			} else {
-				return nil, fmt.Errorf("Invalid value for boolean of %d", value)
+			if err != nil {
+				return array, err
 			}
+
+			array[j] = result
 		}
 
 		return array, nil
@@ -200,19 +140,7 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 		array := make([][]int8, length)
 
 		for j := 0; j < int(length); j++ {
-			var sliceLength uint32
-
-			binary.Read(buf, binary.BigEndian, &sliceLength)
-
-			sliceArray := make([]int8, length)
-
-			for k := 0; k < int(length); k++ {
-				var temp int8
-				binary.Read(buf, binary.BigEndian, &temp)
-				sliceArray[j] = temp
-			}
-
-			array[j] = sliceArray
+			array[j] = decodeSliceInt8Type(buf)
 		}
 
 		return array, nil
@@ -233,4 +161,71 @@ func decodeSlice(buf *bytes.Buffer) (interface{}, error) {
 	default:
 		return nil, fmt.Errorf("Invalid slice type of %d", sliceType)
 	}
+}
+
+func decodeInt8Type(buf *bytes.Buffer) (temp int8) {
+	binary.Read(buf, binary.BigEndian, &temp)
+	return
+}
+
+func decodeFloat32Type(buf *bytes.Buffer) (temp float32) {
+	binary.Read(buf, binary.BigEndian, &temp)
+	return
+}
+
+func decodeInt16Type(buf *bytes.Buffer) (temp int16) {
+	binary.Read(buf, binary.BigEndian, &temp)
+	return
+}
+
+func decodeInt32Type(buf *bytes.Buffer) (temp int32) {
+	binary.Read(buf, binary.BigEndian, &temp)
+	return
+}
+
+func decodeInt64Type(buf *bytes.Buffer) (temp int64) {
+	binary.Read(buf, binary.BigEndian, &temp)
+	return
+}
+
+func decodeStringType(buf *bytes.Buffer) string {
+	var length uint16
+
+	binary.Read(buf, binary.BigEndian, &length)
+
+	strBytes := make([]byte, length)
+	buf.Read(strBytes)
+
+	return string(strBytes[:])
+}
+
+func decodeBooleanType(buf *bytes.Buffer) (bool, error) {
+	var value uint8
+
+	binary.Read(buf, binary.BigEndian, &value)
+
+	if value == 0 {
+		return false, nil
+	} else if value == 1 {
+		return true, nil
+	} else {
+		return false, fmt.Errorf("Invalid value for boolean of %d", value)
+	}
+
+}
+
+func decodeSliceInt8Type(buf *bytes.Buffer) []int8 {
+	var length uint32
+
+	binary.Read(buf, binary.BigEndian, &length)
+
+	array := make([]int8, length)
+
+	for j := 0; j < int(length); j++ {
+		var temp int8
+		binary.Read(buf, binary.BigEndian, &temp)
+		array[j] = temp
+	}
+
+	return array
 }
