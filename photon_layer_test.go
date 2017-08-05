@@ -8,7 +8,7 @@ import (
 
 func TestPhotonLayer(t *testing.T) {
 	photonHeader := []byte{
-		0x00, 0x01, // PeerIdx
+		0x00, 0x01, // PeerID
 		0x01,                   // CrcEnabled
 		0x01,                   // CommandCount
 		0x00, 0x00, 0x00, 0x01, // Timestamp
@@ -35,8 +35,8 @@ func TestPhotonLayer(t *testing.T) {
 
 	packetContent, _ := photonLayer.(PhotonLayer)
 
-	if packetContent.PeerId != uint16(1) {
-		t.Errorf("PeerId invalid")
+	if packetContent.PeerID != uint16(1) {
+		t.Errorf("PeerID invalid")
 	}
 
 	if packetContent.CrcEnabled != uint8(1) {

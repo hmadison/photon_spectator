@@ -18,7 +18,7 @@ var PhotonLayerType = gopacket.RegisterLayerType(5056,
 
 type PhotonLayer struct {
 	// Header
-	PeerId       uint16
+	PeerID       uint16
 	CrcEnabled   uint8
 	CommandCount uint8
 	Timestamp    uint32
@@ -41,7 +41,7 @@ func decodePhotonPacket(data []byte, p gopacket.PacketBuilder) error {
 	buf := bytes.NewBuffer(data)
 
 	// Read the header
-	binary.Read(buf, binary.BigEndian, &layer.PeerId)
+	binary.Read(buf, binary.BigEndian, &layer.PeerID)
 	binary.Read(buf, binary.BigEndian, &layer.CrcEnabled)
 	binary.Read(buf, binary.BigEndian, &layer.CommandCount)
 	binary.Read(buf, binary.BigEndian, &layer.Timestamp)

@@ -65,6 +65,9 @@ type ReliableFragment struct {
 	Data []byte
 }
 
+
+// Returns a structure containing the fields of a reliable message.
+// Errors if the type is not SendReliableType.
 func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	if c.Type != SendReliableType {
 		return msg, fmt.Errorf("Command can't be converted")
@@ -96,6 +99,8 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	return
 }
 
+// Returns a structure containing the fields of a reliable fragment
+// Errors if the type is not SendReliableFragmentType.
 func (c PhotonCommand) ReliableFragment() (msg ReliableFragment, err error) {
 	if c.Type != SendReliableFragmentType {
 		return msg, fmt.Errorf("Command can't be converted")

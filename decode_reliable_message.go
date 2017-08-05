@@ -22,6 +22,8 @@ const (
 
 type ReliableMessageParamaters map[string]interface{}
 
+// Converts the paramaters of a reliable message into a hash situable for use in
+// hashmap.
 func DecodeReliableMessage(msg ReliableMessage) (ReliableMessageParamaters, error) {
 	buf := bytes.NewBuffer(msg.Data)
 	params := make(map[string]interface{})
