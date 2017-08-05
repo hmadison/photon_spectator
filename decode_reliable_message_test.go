@@ -7,79 +7,79 @@ import (
 
 var responses = []struct {
 	input  []byte
-	output map[string]interface{}
+	output ReliableMessageParamaters
 }{
 	{
 		[]byte{0x00, Int8Type, 0xff},
-		map[string]interface{}{"0": int8(-1)},
+		ReliableMessageParamaters{"0": int8(-1)},
 	},
 	{
 		[]byte{0x00, Float32Type, 0x43, 0x00, 0x20, 0xc5},
-		map[string]interface{}{"0": float32(128.128)},
+		ReliableMessageParamaters{"0": float32(128.128)},
 	},
 	{
 		[]byte{0x00, Int32Type, 0x00, 0x00, 0x00, 0x80},
-		map[string]interface{}{"0": int32(128)},
+		ReliableMessageParamaters{"0": int32(128)},
 	},
 	{
 		[]byte{0x00, Int16Type, 0x00, 0x80},
-		map[string]interface{}{"0": int16(128)},
+		ReliableMessageParamaters{"0": int16(128)},
 	},
 	{
 		[]byte{0x00, Int64Type, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80},
-		map[string]interface{}{"0": int64(128)},
+		ReliableMessageParamaters{"0": int64(128)},
 	},
 	{
 		[]byte{0x00, StringType, 0x00, 0x03, 0x61, 0x62, 0x63},
-		map[string]interface{}{"0": "abc"},
+		ReliableMessageParamaters{"0": "abc"},
 	},
 	{
 		[]byte{0x00, BooleanType, 0x00},
-		map[string]interface{}{"0": false},
+		ReliableMessageParamaters{"0": false},
 	},
 	{
 		[]byte{0x00, BooleanType, 0x01},
-		map[string]interface{}{"0": true},
+		ReliableMessageParamaters{"0": true},
 	},
 	{
 		[]byte{0x00, SliceInt8Type, 0x00, 0x00, 0x00, 0x01, 0x01},
-		map[string]interface{}{"0": []int8{1}},
+		ReliableMessageParamaters{"0": []int8{1}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, Float32Type, 0x43, 0x00, 0x20, 0xc5},
-		map[string]interface{}{"0": []float32{128.128}},
+		ReliableMessageParamaters{"0": []float32{128.128}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, Int32Type, 0x00, 0x00, 0x00, 0x80},
-		map[string]interface{}{"0": []int32{128}},
+		ReliableMessageParamaters{"0": []int32{128}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, Int16Type, 0x00, 0x80},
-		map[string]interface{}{"0": []int16{128}},
+		ReliableMessageParamaters{"0": []int16{128}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, Int64Type, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80},
-		map[string]interface{}{"0": []int64{128}},
+		ReliableMessageParamaters{"0": []int64{128}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, StringType, 0x00, 0x03, 0x61, 0x62, 0x63},
-		map[string]interface{}{"0": []string{"abc"}},
+		ReliableMessageParamaters{"0": []string{"abc"}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, BooleanType, 0x01},
-		map[string]interface{}{"0": []bool{true}},
+		ReliableMessageParamaters{"0": []bool{true}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, BooleanType, 0x00},
-		map[string]interface{}{"0": []bool{false}},
+		ReliableMessageParamaters{"0": []bool{false}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, SliceInt8Type, 0x00, 0x00, 0x00, 0x01, 0x01},
-		map[string]interface{}{"0": [][]int8{[]int8{1}}},
+		ReliableMessageParamaters{"0": [][]int8{[]int8{1}}},
 	},
 	{
 		[]byte{0x00, SliceType, 0x00, 0x01, SliceType, 0x00, 0x01, BooleanType, 0x00},
-		map[string]interface{}{"0": []interface{}{[]bool{false}}},
+		ReliableMessageParamaters{"0": []interface{}{[]bool{false}}},
 	},
 }
 

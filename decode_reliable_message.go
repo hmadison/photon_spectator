@@ -20,7 +20,9 @@ const (
 	SliceType     = 121
 )
 
-func DecodeReliableMessage(msg ReliableMessage) (map[string]interface{}, error) {
+type ReliableMessageParamaters map[string]interface{}
+
+func DecodeReliableMessage(msg ReliableMessage) (ReliableMessageParamaters, error) {
 	buf := bytes.NewBuffer(msg.Data)
 	params := make(map[string]interface{})
 
