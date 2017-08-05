@@ -1,26 +1,37 @@
 package photon_spectator
 
+import (	
+	lru "github.com/hashicorp/golang-lru"
+)
+
+// Provides a LRU backed buffer which will assemble ReliableFragments
+// into a single PhotonCommand with type ReliableMessage
 type FragmentBuffer struct {
-	entries map[int]fragmentBufferEntry
+	cache *lru.Cache
 }
 
+// Offers a message to the buffer. Returns nil when no new commands could be assembled from the
+// buffer's contents.
 func (buf *FragmentBuffer) Offer(msg ReliableFragment) *PhotonCommand {
-	entry, ok := buf.entries[int(msg.SequenceNumber)]
-
-	if ok {
+	var entry fragmentBufferEntry
+	
+	if buf.cache.Contains(msg.SequenceNumber) {
+		obj, _ := buf.cache.Get(msg.SequenceNumber)
+		entry = obj.(fragmentBufferEntry)
 		entry.Fragments[int(msg.FragmentNumber)] = msg.Data
+		
 	} else {
 		entry.FragmentsNeeded = int(msg.FragmentCount)
 		entry.Fragments = make(map[int][]byte)
 		entry.Fragments[int(msg.FragmentNumber)] = msg.Data
 	}
-
+	
 	if entry.Finished() {
 		command := entry.Make()
-		delete(buf.entries, int(msg.SequenceNumber))
+		buf.cache.Remove(msg.SequenceNumber)
 		return &command
 	} else {
-		buf.entries[int(msg.SequenceNumber)] = entry
+		buf.cache.Add(msg.SequenceNumber, entry)		
 		return nil
 	}
 }
@@ -44,8 +55,9 @@ func (buf fragmentBufferEntry) Make() PhotonCommand {
 	return PhotonCommand{Type: SendReliableType, Data: data}
 }
 
+// Makes a new instance of a FragmentBuffer
 func NewFragmentBuffer() *FragmentBuffer {
 	var f FragmentBuffer
-	f.entries = make(map[int]fragmentBufferEntry)
+	f.cache, _ = lru.New(128)
 	return &f
 }
