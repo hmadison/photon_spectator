@@ -1,4 +1,4 @@
-package photon
+package photon_spectator
 
 type FragmentBuffer struct {
 	entries map[int]fragmentBufferEntry

@@ -1,12 +1,10 @@
-package albion
+package photon_spectator
 
 import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
 	"strconv"
-
-	"github.com/hmadison/ao_spectator/photon"
 )
 
 const (
@@ -22,7 +20,7 @@ const (
 	SliceType     = 121
 )
 
-func DecodeReliableMessage(msg photon.ReliableMessage) (map[string]interface{}, error) {
+func DecodeReliableMessage(msg ReliableMessage) (map[string]interface{}, error) {
 	buf := bytes.NewBuffer(msg.Data)
 	params := make(map[string]interface{})
 
