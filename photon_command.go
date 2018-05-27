@@ -49,7 +49,8 @@ type ReliableMessage struct {
 
 	// OperationResponse
 	OperationResponseCode uint16
-	OperationDebugByte    uint8
+	OperationDebugType    uint8
+	OperationDebugPayload interface{}
 
 	ParamaterCount int16
 	Data           []byte
@@ -90,7 +91,17 @@ func (c PhotonCommand) ReliableMessage() (msg ReliableMessage, err error) {
 	case OperationResponse, otherOperationResponse:
 		binary.Read(buf, binary.BigEndian, &msg.OperationCode)
 		binary.Read(buf, binary.BigEndian, &msg.OperationResponseCode)
-		binary.Read(buf, binary.BigEndian, &msg.OperationDebugByte)
+		binary.Read(buf, binary.BigEndian, &msg.OperationDebugType)
+	}
+
+	switch msg.OperationDebugType {
+	case NilType, 0:
+		// Do Nothing
+	case StringType:
+		msg.OperationDebugPayload = decodeStringType(buf)
+	default:
+		err = fmt.Errorf("Can't read debug payload (Type %d)", msg.OperationDebugType)
+		return
 	}
 
 	binary.Read(buf, binary.BigEndian, &msg.ParamaterCount)
